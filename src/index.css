@@ -5,8 +5,8 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --color-brand: #f97316;
   --color-brand-muted: #fb923c;
-  --color-surface: #09090b;
-  --color-surface-elevated: #18181b;
+  --color-surface: #18181b;
+  --color-surface-elevated: #27272a;
 }
 
 @layer base {
