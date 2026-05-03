@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react'
 
-const INSTALL_COMMAND = "irm 'https://mydomain.com/install.ps1' | iex"
+const INSTALL_COMMANDS = {
+  windows: "irm https://noncesense-frontend.vercel.app/install.ps1 | iex",
+  mac_linux: "curl -fsSL https://noncesense-frontend.vercel.app/install.sh | bash"
+}
 
 function CopyStackOutlineIcon(props) {
   return (
@@ -104,17 +107,18 @@ const pillars = [
 ]
 
 function App() {
+  const [os, setOs] = useState('windows')
   const [copied, setCopied] = useState(false)
 
   const copyInstallCommand = useCallback(() => {
-    void navigator.clipboard.writeText(INSTALL_COMMAND).then(
+    void navigator.clipboard.writeText(INSTALL_COMMANDS[os]).then(
       () => {
         setCopied(true)
         window.setTimeout(() => setCopied(false), 2000)
       },
-      () => {},
+      () => { },
     )
-  }, [])
+  }, [os])
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-zinc-900 text-zinc-100">
@@ -139,7 +143,7 @@ function App() {
 
       <main>
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8 lg:pt-28" aria-labelledby="hero-heading">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-5xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-orange-400">
               On-chain · Non-custodial · Explainable
             </p>
@@ -150,38 +154,57 @@ function App() {
               An assistant for Web3 that feels controlled and transparent: limited permissions through a smart wallet,
               human-readable actions, progressive autonomy, and an audit trail you can actually read.
             </p>
-            <div className="mx-auto mt-10 max-w-2xl rounded-xl border border-white/10 bg-zinc-900/70 p-3 shadow-lg ring-1 ring-orange-500/10 sm:p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-0">
-                <button
-                  type="button"
-                  className="inline-flex shrink-0 items-center justify-center rounded-lg bg-orange-500 px-6 py-3 text-base font-semibold text-zinc-950 shadow-md shadow-orange-500/20 transition hover:bg-orange-400 sm:rounded-r-none sm:px-7 sm:py-3.5 sm:text-[1.05rem]"
-                >
-                  Try now:
-                </button>
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1.5 border-t border-white/10 pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                  <div className="flex items-center gap-2">
-                    <code className="min-w-0 flex-1 overflow-x-auto rounded-lg bg-zinc-950/50 px-3 py-2.5 text-left font-mono text-xs leading-relaxed text-orange-100 ring-1 ring-white/5 sm:px-4 sm:py-3 sm:text-sm">
-                      {INSTALL_COMMAND}
+            <div className="mx-auto mt-10 max-w-4xl rounded-2xl border border-white/10 bg-zinc-900/80 p-2 shadow-2xl ring-1 ring-orange-500/10 backdrop-blur-sm sm:p-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="relative flex w-full shrink-0 p-1 bg-zinc-950/80 rounded-xl ring-1 ring-inset ring-white/5 sm:w-[240px]">
+                  <div
+                    className="absolute inset-y-1 w-[calc(50%-4px)] rounded-lg bg-orange-500 shadow-md transition-all duration-300 ease-out"
+                    style={{ left: os === 'windows' ? '4px' : 'calc(50%)' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setOs('windows')}
+                    className={`relative z-10 flex-1 px-3 py-2.5 text-sm font-semibold transition-colors duration-200 ${os === 'windows' ? 'text-zinc-950' : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                  >
+                    Windows
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOs('mac_linux')}
+                    className={`relative z-10 flex-1 px-3 py-2.5 text-sm font-semibold transition-colors duration-200 ${os === 'mac_linux' ? 'text-zinc-950' : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                  >
+                    macOS / Linux
+                  </button>
+                </div>
+
+                <div className="flex min-h-0 min-w-0 flex-1 items-center justify-between gap-3 rounded-xl bg-zinc-950/40 px-3 py-2.5 ring-1 ring-inset ring-white/5 sm:px-4 sm:py-3">
+                  <div className="flex min-w-0 flex-1 items-center overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <code className="text-left font-mono text-sm leading-relaxed text-orange-100 whitespace-nowrap">
+                      {INSTALL_COMMANDS[os]}
                     </code>
-                    <button
-                      type="button"
-                      onClick={copyInstallCommand}
-                      title={copied ? 'Copied!' : 'Copy to clipboard'}
-                      aria-label={copied ? 'Copied to clipboard' : 'Copy install command to clipboard'}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-zinc-950/40 text-zinc-400 transition hover:border-orange-500/35 hover:bg-zinc-800 hover:text-orange-400 sm:h-11 sm:w-11"
-                    >
-                      {copied ? (
-                        <CheckOutlineIcon className="h-5 w-5 text-orange-500" />
-                      ) : (
-                        <CopyStackOutlineIcon className="h-5 w-5" />
-                      )}
-                    </button>
                   </div>
-                  {copied ? (
-                    <p className="text-center text-xs text-orange-400 sm:text-left" aria-live="polite">
-                      Copied to clipboard
-                    </p>
-                  ) : null}
+                  <button
+                    type="button"
+                    onClick={copyInstallCommand}
+                    title={copied ? 'Copied!' : 'Copy to clipboard'}
+                    aria-label={copied ? 'Copied to clipboard' : 'Copy install command to clipboard'}
+                    className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-zinc-400 transition hover:bg-orange-500/20 hover:text-orange-400 ring-1 ring-inset ring-white/10"
+                  >
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-100 opacity-100 rotate-0' : 'scale-50 opacity-0 rotate-90'
+                        }`}
+                    >
+                      <CheckOutlineIcon className="h-4 w-4 text-orange-500" />
+                    </span>
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${copied ? 'scale-50 opacity-0 -rotate-90' : 'scale-100 opacity-100 rotate-0'
+                        }`}
+                    >
+                      <CopyStackOutlineIcon className="h-4 w-4" />
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
